@@ -1,0 +1,280 @@
+{% extends "blank.html" %}
+
+{% block title %}
+新建调查向导
+{% endblock%}
+
+{% block pagename %}
+新建调查向导
+{% endblock%}
+
+{% block content %}
+				<!-- <div id="page-content" class="clearfix">
+					<div class="page-header position-relative">
+						<h1>
+							新建调查向导
+							<small>
+								<i class="icon-double-angle-right"></i>
+								and Validation
+							</small>
+						</h1>
+					</div> --><!--/.page-header-->
+
+					<div class="row-fluid">
+						<!--PAGE CONTENT BEGINS HERE-->
+
+						<div class="row-fluid">
+							<div class="span12">
+								<div class="widget-box">
+									<div class="widget-header widget-header-blue widget-header-flat wi1dget-header-large">
+										<h4 class="lighter">新建调查向导</h4>
+									</div>
+
+									<div class="widget-body">
+										<div class="widget-main">
+												
+												<div class="step-content row-fluid position-relative">
+													<div class="step-pane active" id="step1">
+														<h3 class="lighter block green">请输入需求调查的基本信息</h3>
+														<form class="form-horizontal" id="validation-form" action="{% url 'polls:poll_save' %}" method="post">
+															{% csrf_token %}
+															<div class="control-group">
+																<label class="control-label" for="title">调查标题</label>
+
+																<div class="controls">
+																	<div class="span12">
+																		<input type="text" name="title" id="title" class="span8" placeholder="调查名称" />
+																	</div>
+																</div>
+															</div>
+
+															<div class="control-group">
+																<label class="control-label" for="comments">调查说明</label>
+																<div class="controls">
+																	<span class="span12">
+																		<textarea class="span8" name="comments" id="comments" placeholder="描述调查，便于其他人理解(必填)"></textarea>
+																	</span>
+																</div>
+															</div>
+															
+															<div class="hr hr-dotted"></div>
+															<div class="control-group">
+																<label class="control-label" for="product">样品</label>
+																<div class="controls">
+																	<span class="span12">
+																		{% if not product_list %}
+																		<label>暂时没有样品</label>
+																		{% endif%}
+																		{% for product in product_list %}
+																		<label>
+																			<input name="product" value="{{ product.id }}" type="checkbox" />
+																			<span class="lbl"> {{ product.title }}</span>
+																		</label>
+																		{% endfor %}
+																	</span>
+																</div>
+															</div>
+															<div class="hr hr-dotted"></div>
+
+															<div class="control-group">
+																<label class="control-label" for="subscription">收件人群组</label>
+																<!-- <a class="btn btn-info" href="#">新增联系人</a> -->
+																<div class="controls">
+																	<span class="span12">
+																		{% if not contact_group_list %}
+																		<label>暂时没有可以选择的联系人群组</label>
+																		{% endif%}
+																		{% for contact_group in contact_group_list %}
+																		<label>
+																			<input name="contact_group" id="contact_group" value="{{ contact_group.id }}" type="checkbox" />
+																			<span class="lbl"> {{ contact_group.name }}</span>
+																			<span class="lbl"> ({{ contact_group.member_count }})</span>
+																		</label>
+																		{% endfor %}																		
+																	</span>
+																</div>
+															</div>
+
+															<div class="control-group">
+																<label class="control-label" for="template">邮件模板</label>
+
+																<div class="controls">
+																	<div class="span12">
+																		<textarea id="template" rows="8" name="template" class="span8">亲爱的同事,你好
+
+  请点击下文的链接访问调查页面，并且提供你需要产品的数量。
+  {url}
+  谢谢支持！
+
+市场部</textarea>
+																	</div>
+																</div>
+															</div>
+															<hr />
+															<div class="row-fluid wizard-actions">
+																<input type="submit" class="btn btn-primary" title="保存调查" />
+															</div>										
+														</form>
+													</div>	
+												</div>
+											</div>
+										</div><!--/widget-main-->
+									</div><!--/widget-body-->
+								</div>
+							</div>
+						</div>
+						<!--PAGE CONTENT ENDS HERE-->
+					</div><!--/row-->
+				
+{% endblock %}
+
+{% block page_specific %}
+		
+		<script type="text/javascript" src="/static/pollapp/assets/js/fuelux.wizard.js"></script>
+		<script type="text/javascript" src="/static/pollapp/assets/js/jquery.validate.min.js"></script>
+		<script type="text/javascript" src="/static/pollapp/assets/js/bootbox.min.js"></script>
+		<script type="text/javascript" src="/static/pollapp/assets/js/jquery.maskedinput.min.js"></script>
+		<script type="text/javascript" src="/static/pollapp/assets/js/chosen.jquery.min.js"></script>
+
+		<!-- inline scripts related to this page -->
+		
+		<script type="text/javascript">
+			$(function() {
+				$('.nav li').removeClass('active');
+				$('#polls').addClass('open active');
+				$('#poll_new').addClass('active');
+				
+				$('[data-rel=tooltip]').tooltip();
+			
+				$(".chzn-select").css('width','150px').chosen({allow_single_deselect:true , no_results_text: "No such state!"})
+				.on('change', function(){
+					$(this).closest('form').validate().element($(this));
+				}); 
+			
+				var $validation = true;
+				// $('#btn-primary').on('click' , function(e, info){
+					// console.log(e);
+					// if(!$('#validation-form').valid()) { 
+						// console.log("false");
+						// return false;
+					// } else {
+// 						
+						// console.log("true");
+					// }
+				// })
+				
+				// $('#fuelux-wizard').ace_wizard().on('change' , function(e, info){
+					// console.log('abc');
+					// if(info.step == 1 && $validation) {
+						// if(!$('#validation-form').valid()) return false;
+					// }
+				// }).on('finished', function(e) {
+					// bootbox.dialog("非常感谢，您的调查已经保存!", [{
+						// "label" : "关闭",
+						// "class" : "btn-small btn-primary",
+						// }]
+					// );
+				// });
+// 			
+			
+	
+			$('#sample-form').hide();
+				/*
+				$('#skip-validation').removeAttr('checked').on('click', function(){
+					$validation = this.checked;
+					if(!this.checked) {
+						$('#sample-form').hide();
+						$('#validation-form').show();
+					}
+					else {
+						$('#validation-form').hide();
+						$('#sample-form').show();
+					}
+				});
+*/
+			
+			
+			
+				//documentation : http://docs.jquery.com/Plugins/Validation/validate
+/*
+			
+			
+				$.mask.definitions['~']='[+-]';
+				$('#phone').mask('(999) 999-9999');
+			
+				jQuery.validator.addMethod("phone", function (value, element) {
+					return this.optional(element) || /^\(\d{3}\) \d{3}\-\d{4}( x\d{1,6})?$/.test(value);
+				}, "Enter a valid phone number.");
+			
+*/
+				$('#validation-form').validate({
+					errorElement: 'span',
+					errorClass: 'help-inline',
+					focusInvalid: false,
+					rules: {
+						title: {
+							required: true
+						},
+						comments: {
+							required: true
+						},
+						product: {
+							required: true
+						},
+						contact_group: {
+							required: true
+						},
+						template: {
+							required: true
+						},
+					},
+			
+					messages: {
+						title: {
+							required: "请输入调查标题.",
+						},
+						comments: {
+							required: "请输入调查说明.",
+						},
+						product: "请至少选择一个产品.",
+						contact_group: "请至少选择一个收件人群组.",
+						template: "请输入邮件模板.",
+					},
+			
+					invalidHandler: function (event, validator) { //display error alert on form submit   
+						$('.alert-error', $('.login-form')).show();
+					},
+			
+					highlight: function (e) {
+						$(e).closest('.control-group').removeClass('info').addClass('error');
+					},
+			
+					success: function (e) {
+						$(e).closest('.control-group').removeClass('error').addClass('info');
+						$(e).remove();
+					},
+			
+					errorPlacement: function (error, element) {
+						if(element.is(':checkbox') || element.is(':radio')) {
+							var controls = element.closest('.controls');
+							if(controls.find(':checkbox,:radio').length > 1) controls.append(error);
+							else error.insertAfter(element.nextAll('.lbl').eq(0));
+						} 
+						else if(element.is('.chzn-select')) {
+							error.insertAfter(element.nextAll('[class*="chzn-container"]').eq(0));
+						}
+						else error.insertAfter(element);
+					},
+			
+					submitHandler: function (form) {
+						this.submit();
+					},
+					invalidHandler: function (form) {
+					}
+				});
+			
+			})
+		</script>
+
+
+{% endblock %}

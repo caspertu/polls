@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<H1>{{ answer.poll.title }}</H1>
+<UL>
+
+	<!-- <input name="answer{{answer.id}}" value="{{answer.count}}"/> -->
+	感谢{{ answer.contact.name }}的反馈， </br> 
+	需求数量为
+	{% for answeritem in answer.answeritem_set.all %}
+		{{ answeritem.product.title}}：{{answeritem.count}}
+	{% endfor %}
+	更新时间:{{ answer.update_date | date:"Y-m-d H:i"}} 
+	
+</UL>
+
+{% endblock %}

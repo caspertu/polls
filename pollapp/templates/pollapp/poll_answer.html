@@ -1,0 +1,82 @@
+{% extends "blank.html" %}
+
+{% block title %}
+问卷:{{ poll.title }}
+{% endblock%}
+
+{% block pagename %}
+问卷:{{ poll.title }}
+{% endblock%}
+
+{% block content %}
+
+<H1>问卷标题:{{ poll.title }}</H1>
+<FORM action="{% url 'polls:poll_answer_update' answer.code %}" method="post">
+	<fieldset>
+		<legend>调查对象:{{ contact.name }}</legend>
+
+	{% csrf_token %}
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>
+					#
+					</th>
+					<th>
+					产品
+					</th>
+					<th>
+					价格	
+					</th>					
+					<th>
+					需要数量	
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% if answer.answeritem_set.all.count > 0 %}
+					{% for answeritem in answer.answeritem_set.all %}
+					<tr class>
+						<td>{{ forloop.counter }}</td>
+						<td>
+							
+							<img alt="{{answeritem.product.title}}" src="{{ answeritem.product.image_url }}" />
+							{{ answeritem.product.title }}
+						</td>
+						<td>
+							{{ answeritem.product.price}}
+						</td>
+						<td>
+							<INPUT type="hidden" name="product" value="{{answeritem.product.id}}"/> 
+							<INPUT type="hidden" name="s{{answeritem.product.id}}" value="{{answeritem.id}}"/> 
+
+							<input type="text" name="{{answeritem.product.id}}" value="{{answeritem.count}}"/>
+						</td>
+					</tr>
+					{% endfor %}
+				{% else %}
+					{% for product in poll.products.all %}
+					<tr class>
+						<td>{{ forloop.counter }}</td>
+						<td>{{ product.title }}</td>
+						<td>
+							{{product.price}}
+						</td>
+						<td>
+							<INPUT type="hidden" name="product" value="{{product.id}}"/> 
+							<input type="text" name="{{product.id}}" value="0"/>
+						</td>
+					</tr>
+					{% endfor %}
+				{% endif %}
+			</tbody>
+		</table>
+		{% if answer.answeritem_set.all.count > 0 %}
+			<INPUT type="submit" name="update" class="btn btn-primary" value="更新"/>
+		{% else %}
+			<INPUT type="submit" class="btn btn-primary" value="提交"/>
+		{% endif %}
+	</fieldset>
+</FORM>
+
+{% endblock %}
